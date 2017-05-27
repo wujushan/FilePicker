@@ -24,5 +24,8 @@
         <item name="efp__ic_action_select_all">@drawable/efp_dark__ic_action_select_all</item>
         <item name="efp__ic_action_sort">@drawable/efp_dark__ic_action_sort</item>
     </style>
+    <style name="FilePickerThemeLight" parent="ExFilePickerThemeLight">
+        <item name="windowActionBar">false</item>
+    </style>
 
 </resources>

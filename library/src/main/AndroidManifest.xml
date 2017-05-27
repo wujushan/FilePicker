@@ -9,8 +9,8 @@
         <activity
             android:name=".ui.activity.ExFilePickerActivity"
             android:theme="@style/ExFilePickerThemeLight"/>
-        <activity android:name=".ui.activity.FilePickerActivity">
-        </activity>
+        <activity android:name=".ui.activity.FilePickerActivity"
+                  android:theme="@style/FilePickerThemeLight"/>
     </application>
 
 </manifest>

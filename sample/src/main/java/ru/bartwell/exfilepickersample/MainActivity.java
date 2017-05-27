@@ -2,6 +2,7 @@ package ru.bartwell.exfilepickersample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             exFilePicker.setSortingType(ExFilePicker.SortingType.NAME_DESC);
         }
         if (((AppCompatCheckBox) findViewById(R.id.start_from_root)).isChecked()) {
-            exFilePicker.setStartDirectory("/storage/emulated/0/");
+            String root = Environment.getExternalStorageDirectory().toString();
+            exFilePicker.setStartDirectory(root);
         }
         if (((AppCompatCheckBox) findViewById(R.id.first_item_as_up)).isChecked()) {
             exFilePicker.setUseFirstItemAsUpEnabled(true);

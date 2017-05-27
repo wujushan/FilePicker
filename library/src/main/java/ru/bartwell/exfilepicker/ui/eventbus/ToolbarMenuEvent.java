@@ -10,7 +10,7 @@ public class ToolbarMenuEvent {
     public static final int SORT = 1;
     public static final int NEW_FOLDER = 2;
     public static final int SELECT_ALL = 3;
-    public static final int DESELECT_ALL = 4;
+    public static final int DESELECT = 4;
     public static final int INVERT_SELECTION = 5;
     public static final int CHANGE_VIEW = 6;
 

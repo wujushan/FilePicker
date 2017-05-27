@@ -52,11 +52,12 @@ public class ExFilePickerActivity extends AppCompatActivity implements OnListIte
     public static final String EXTRA_START_DIRECTORY = "START_DIRECTORY";
     public static final String EXTRA_USE_FIRST_ITEM_AS_UP_ENABLED = "USE_FIRST_ITEM_AS_UP_ENABLED";
     public static final String EXTRA_HIDE_HIDDEN_FILES = "HIDE_HIDDEN_FILES";
+
     public static final String PERMISSION_READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
     private static final int REQUEST_CODE_READ_EXTERNAL_STORAGE = 1;
     private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 2;
 //    private static final String TOP_DIRECTORY = "/";
-    private static String TOP_DIRECTORY = "/";
+    private static String TOP_DIRECTORY = Environment.getExternalStorageDirectory().toString();// "/"
 
     private boolean mCanChooseOnlyOneItem;
     @Nullable
@@ -66,8 +67,14 @@ public class ExFilePickerActivity extends AppCompatActivity implements OnListIte
     private boolean mIsNewFolderButtonDisabled;
     private boolean mIsSortButtonDisabled;
     private boolean mIsQuitButtonEnabled;
+    /**
+     * Three choice type : ALL, FILES, DIRECTORIES
+     */
     @NonNull
     private ExFilePicker.ChoiceType mChoiceType = ExFilePicker.ChoiceType.ALL;
+    /**
+     *
+     */
     @NonNull
     private ExFilePicker.SortingType mSortingType = ExFilePicker.SortingType.NAME_ASC;
     private File mCurrentDirectory;

@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.io.File;
+import java.net.URLEncoder;
 
 import ru.bartwell.exfilepicker.R;
 import ru.bartwell.exfilepicker.ui.callback.OnListItemClickListener;
@@ -33,7 +34,8 @@ public abstract class BaseFilesListHolder extends RecyclerView.ViewHolder implem
 
     public void bind(@NonNull File file, boolean isMultiChoiceModeEnabled, boolean isSelected, @Nullable OnListItemClickListener listener) {
         setOnListItemClickListener(listener);
-        mFileName.setText(file.getName());
+//        mFileName.setText(file.getName());
+        mFileName.setText(URLEncoder.encode(file.getName()));
         mCheckBox.setVisibility(isMultiChoiceModeEnabled ? View.VISIBLE : View.GONE);
         mCheckBox.setChecked(isSelected);
     }
