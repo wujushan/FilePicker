@@ -1,10 +1,8 @@
 package ru.bartwell.exfilepicker.ui.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -17,11 +15,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Display;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,7 +37,9 @@ import ru.bartwell.exfilepicker.ui.dialog.NewFolderDialog;
 import ru.bartwell.exfilepicker.ui.dialog.SortingDialog;
 import ru.bartwell.exfilepicker.ui.eventbus.MultiChoiceEvent;
 import ru.bartwell.exfilepicker.ui.eventbus.ToolbarMenuEvent;
+import ru.bartwell.exfilepicker.ui.eventbus.UpdateSelectedEvent;
 import ru.bartwell.exfilepicker.ui.fragment.ExFilePickerFragment;
+import ru.bartwell.exfilepicker.ui.fragment.SelectecFilesFragment;
 import ru.bartwell.exfilepicker.ui.view.FilesListToolbar;
 import ru.bartwell.exfilepicker.utils.Utils;
 
@@ -48,6 +47,7 @@ public class FilePickerActivity extends AppCompatActivity implements Toolbar.OnM
         , View.OnClickListener
         , SortingDialog.OnSortingSelectedListener
         , NewFolderDialog.OnNewFolderNameEnteredListener {
+    private static final String TAG = FilePickerActivity.class.getSimpleName();
     @BindView(R2.id.toolbar)
     FilesListToolbar mToolbar;
     @BindView(R2.id.file_content_frame)
@@ -101,8 +101,6 @@ public class FilePickerActivity extends AppCompatActivity implements Toolbar.OnM
         initActionBar();
         setupViews();
         initDrawer();
-
-
         if (ContextCompat.checkSelfPermission(this, PERMISSION_READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             readDirectory(mCurrentDirectory);
         } else {
@@ -116,10 +114,12 @@ public class FilePickerActivity extends AppCompatActivity implements Toolbar.OnM
      * @param currentDirectory
      */
     private void readDirectory(File currentDirectory) {
-        ExFilePickerFragment fragment = ExFilePickerFragment.newInstance(mCurrentDirectory.getAbsolutePath(), mCanChooseOnlyOneItem, mShowOnlyExtensions
+        ExFilePickerFragment filePickerFragment = ExFilePickerFragment.newInstance(mCurrentDirectory.getAbsolutePath(), mCanChooseOnlyOneItem, mShowOnlyExtensions
                 , mExceptExtensions, mIsNewFolderButtonDisabled, mIsSortButtonDisabled
                 , mIsQuitButtonEnabled, mChoiceType, mSortingType, mUseFirstItemAsUpEnabled, mHideHiddenFiles);
-        replaceFragment(R.id.file_content_frame, fragment);
+        SelectecFilesFragment selectecFilesFragment = SelectecFilesFragment.newInstance("", "");
+        replaceFragment(R.id.file_content_frame, filePickerFragment);
+        replaceFragment(R.id.sel_files_frame, selectecFilesFragment);
     }
 
     private void replaceFragment(int layoutId, Fragment fragment) {
@@ -150,17 +150,21 @@ public class FilePickerActivity extends AppCompatActivity implements Toolbar.OnM
 
     private void initDrawer() {
         mToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                Log.e(TAG, "Drawer Opened");
+                EventBus.getDefault().post(new UpdateSelectedEvent());
+            }
+
+
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 super.onDrawerSlide(drawerView, slideOffset);
-                //get height and width of window
-                WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                Display display = manager.getDefaultDisplay();
-                Point point = new Point();
-                display.getSize(point);
-                // set position of filecontentFrame
-                //根据左面菜单的right作为右面布局的left   左面的right+屏幕的宽度（或者right的宽度这里是相等的）为右面布局的right
-                mFileContentFrame.layout(mSelFilesFrame.getRight(), 0, mSelFilesFrame.getRight() + point.x, point.y);
+                DrawerLayout.LayoutParams contentParams = (DrawerLayout.LayoutParams) mFileContentFrame.getLayoutParams();
+                contentParams.setMargins(mSelFilesFrame.getRight(), 0, 0, 0);// button.layout(left, top, right,bottom);
+                mFileContentFrame.setLayoutParams(contentParams);//设置控件到父亲控件的距离
             }
         };
         mDrawer.addDrawerListener(mToggle);

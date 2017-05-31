@@ -34,7 +34,9 @@ import ru.bartwell.exfilepicker.ui.adapter.FilesListAdapter;
 import ru.bartwell.exfilepicker.ui.callback.OnListItemClickListener;
 import ru.bartwell.exfilepicker.ui.eventbus.DirPathEvent;
 import ru.bartwell.exfilepicker.ui.eventbus.MultiChoiceEvent;
+import ru.bartwell.exfilepicker.ui.eventbus.SelectedFilesUpdatedEvent;
 import ru.bartwell.exfilepicker.ui.eventbus.ToolbarMenuEvent;
+import ru.bartwell.exfilepicker.ui.eventbus.UpdateSelectedEvent;
 import ru.bartwell.exfilepicker.utils.ListUtils;
 import ru.bartwell.exfilepicker.utils.Utils;
 
@@ -124,6 +126,16 @@ public class ExFilePickerFragment extends Fragment implements OnListItemClickLis
         }
         //register event bus
         EventBus.getDefault().register(this);
+    }
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEventMainThread(UpdateSelectedEvent event){
+        if (mAdapter != null){
+            List<String> selectedFiles = mAdapter.getSelectedItems();
+            if (selectedFiles.size() > 0){
+                EventBus.getDefault().post(new SelectedFilesUpdatedEvent(selectedFiles));
+//                Toast.makeText(getActivity(),"update selected",Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

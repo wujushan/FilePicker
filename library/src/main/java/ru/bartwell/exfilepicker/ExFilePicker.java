@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import ru.bartwell.exfilepicker.ui.activity.ExFilePickerActivity;
+import ru.bartwell.exfilepicker.ui.activity.FilePickerActivity;
 
 /**
  * Created by BArtWell on 26.02.2017.
@@ -77,8 +78,8 @@ public class ExFilePicker {
     }
 
     public void start(@NonNull Activity activity, int requestCode) {
-        Intent intent = new Intent(activity, ExFilePickerActivity.class);
-//        Intent intent = new Intent(activity, FilePickerActivity.class);
+//        Intent intent = new Intent(activity, ExFilePickerActivity.class);
+        Intent intent = new Intent(activity, FilePickerActivity.class);
         intent.putExtra(ExFilePickerActivity.EXTRA_CAN_CHOOSE_ONLY_ONE_ITEM, mCanChooseOnlyOneItem);
         intent.putExtra(ExFilePickerActivity.EXTRA_SHOW_ONLY_EXTENSIONS, mShowOnlyExtensions);
         intent.putExtra(ExFilePickerActivity.EXTRA_EXCEPT_EXTENSIONS, mExceptExtensions);

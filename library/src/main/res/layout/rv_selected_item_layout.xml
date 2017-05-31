@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:layout_margin="4dp"
+    >
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/file_name_tx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="com.pax.cvandroid/exmples"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/del_bt"
+        android:ellipsize="end"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        />
+
+    <Button
+        android:id="@+id/del_bt"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@android:color/white"
+        android:text="删除"
+        />
+</RelativeLayout>

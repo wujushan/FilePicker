@@ -3,16 +3,38 @@ package ru.bartwell.exfilepicker.ui.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ru.bartwell.exfilepicker.R;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-public class SelectecFilesFragment extends Fragment {
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import ru.bartwell.exfilepicker.R;
+import ru.bartwell.exfilepicker.R2;
+import ru.bartwell.exfilepicker.ui.adapter.SelectedFilesAdapter;
+import ru.bartwell.exfilepicker.ui.eventbus.SelectedFileDeletedEvent;
+import ru.bartwell.exfilepicker.ui.eventbus.SelectedFilesUpdatedEvent;
+
+public class SelectecFilesFragment extends Fragment implements SelectedFilesAdapter.OnFileItemDeleteListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    @BindView(R2.id.selected_rv)
+    RecyclerView mSelectedRv;
+    Unbinder unbinder;
+
+    private SelectedFilesAdapter mAdapter;
+    private List<String> selectedFiles;
 
     private String mParam1;
     private String mParam2;
@@ -39,13 +61,30 @@ public class SelectecFilesFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_selectec_files, container, false);
+        View view = inflater.inflate(R.layout.fragment_selectec_files, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initRecycler();
+    }
+
+    private void initRecycler() {
+        mAdapter = new SelectedFilesAdapter(selectedFiles);
+        mSelectedRv.setHasFixedSize(true);
+        mSelectedRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSelectedRv.setAdapter(mAdapter);
+        mAdapter.setOnFileItemDelete(this);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -55,21 +94,42 @@ public class SelectecFilesFragment extends Fragment {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(SelectedFilesUpdatedEvent event) {
+        selectedFiles = event.getSelectedFiles();
+        mAdapter.setSelectedFileItems(selectedFiles);
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
+    public void onItemDelete(int position) {
+        mSelectedRv.getAdapter().notifyItemRemoved(position);
+//        mAdapter.notifyItemRemoved(position);
+        selectedFiles.remove(position);
+        EventBus.getDefault().post(new SelectedFileDeletedEvent(position));
     }
 
     /**

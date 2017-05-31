@@ -7,8 +7,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:debuggable="false"
-        tools:ignore="HardcodedDebugMode">
+    android:debuggable="false"
+    tools:ignore="HardcodedDebugMode"
+       >
         <activity
             android:name=".ui.activity.ExFilePickerActivity"
             android:theme="@style/ExFilePickerThemeLight"/>
