@@ -35,6 +35,7 @@ import butterknife.ButterKnife;
 import ru.bartwell.exfilepicker.ExFilePicker;
 import ru.bartwell.exfilepicker.R;
 import ru.bartwell.exfilepicker.R2;
+import ru.bartwell.exfilepicker.data.ExFilePickerResult;
 import ru.bartwell.exfilepicker.ui.dialog.NewFolderDialog;
 import ru.bartwell.exfilepicker.ui.dialog.SortingDialog;
 import ru.bartwell.exfilepicker.ui.eventbus.MultiChoiceEvent;
@@ -269,6 +270,11 @@ public class FilePickerActivity extends AppCompatActivity implements Toolbar.OnM
         boolean isGridModeEnable = event.isGridModeEnable();
         mToolbar.setMultiChoiceModeEnabled(multiChoiceEnable);
         setChangeViewIcon(mToolbar.getMenu(), isGridModeEnable);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(ExFilePickerResult result) {
+
     }
 
     private void setChangeViewIcon(@NonNull Menu menu, boolean isGridModeEnable) {

@@ -3,7 +3,6 @@ package ru.bartwell.exfilepicker.utils;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.AttrRes;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
 import java.util.Locale;
@@ -15,7 +14,7 @@ import ru.bartwell.exfilepicker.R;
  */
 public class Utils {
     @NonNull
-    public static String getFileExtension(@NonNull String fileName) {
+    public static String  getFileExtension(@NonNull String fileName) {
         int index = fileName.lastIndexOf(".");
         if (index == -1) return "";
         return fileName.substring(index + 1, fileName.length()).toLowerCase(Locale.getDefault());

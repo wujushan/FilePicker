@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,6 +29,7 @@ import butterknife.Unbinder;
 import ru.bartwell.exfilepicker.ExFilePicker;
 import ru.bartwell.exfilepicker.R;
 import ru.bartwell.exfilepicker.R2;
+import ru.bartwell.exfilepicker.data.ExFilePickerResult;
 import ru.bartwell.exfilepicker.ui.adapter.FilesListAdapter;
 import ru.bartwell.exfilepicker.ui.callback.OnListItemClickListener;
 import ru.bartwell.exfilepicker.ui.eventbus.DirPathEvent;
@@ -276,6 +278,11 @@ public class ExFilePickerFragment extends Fragment implements OnListItemClickLis
         }
     }
 
+    private void readUpDirectory() {
+        mCurrentDirectory = mCurrentDirectory.getParentFile();
+        readDirectory(mCurrentDirectory.getAbsolutePath());
+    }
+
     private boolean isTopDirectory(@Nullable File directory) {
         return directory != null && TOP_DIRECTORY.equals(directory.getAbsolutePath());
     }
@@ -298,7 +305,37 @@ public class ExFilePickerFragment extends Fragment implements OnListItemClickLis
 
     @Override
     public void onListItemClick(int position) {
+        if (mIsMultiChoiceModeEnabled) {
+            if (mCanChooseOnlyOneItem) {
+                mAdapter.deselect();
+            }
+            mAdapter.setItemSelected(position, !mAdapter.isItemSelected(position));
+        } else {
+            if (position == OnListItemClickListener.POSITION_UP) {
+                readUpDirectory();
+            }else {
+                File item = mAdapter.getItem(position);
+                if (item.isDirectory()) {
+                    mCurrentDirectory = new File(mCurrentDirectory, item.getName());
+                    readDirectory(mCurrentDirectory.getAbsolutePath());
+                } else {
+                    finishWithResult(mCurrentDirectory, item.getName());
+                }
+            }
+        }
 
+    }
+    private void finishWithResult(@NonNull File path, @NonNull String file) {
+        finishWithResult(path, new ArrayList<>(Collections.singletonList(file)));
+    }
+
+    private void finishWithResult(@NonNull File path, @NonNull List<String> files) {
+        String resultPath = path.getAbsolutePath();
+        if (!resultPath.endsWith("/")) {
+            resultPath += "/";
+        }
+        ExFilePickerResult result = new ExFilePickerResult(resultPath, files);
+        EventBus.getDefault().post(result); //post selected result
     }
 
     @Override
@@ -316,7 +353,7 @@ public class ExFilePickerFragment extends Fragment implements OnListItemClickLis
         mIsMultiChoiceModeEnabled = enabled;
         mAdapter.setUseFirstItemAsUpEnabled(!enabled && mUseFirstItemAsUpEnabled && !isTopDirectory(mCurrentDirectory));
         mAdapter.setMultiChoiceModeEnabled(enabled);
-        EventBus.getDefault().post(new MultiChoiceEvent(enabled,mAdapter.isGridModeEnabled()));
+        EventBus.getDefault().post(new MultiChoiceEvent(enabled, mAdapter.isGridModeEnabled()));
     }
 
     /**
